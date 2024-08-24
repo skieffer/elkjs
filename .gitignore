@@ -7,3 +7,7 @@ bin/
 *.sublime-*
 .project
 org.eclipse.buildship.core.prefs
+
+.idea/
+package-lock.json
+
