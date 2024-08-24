@@ -152,7 +152,7 @@ class Painter {
 
 function main() {
     const elk = new ELK({
-        workerUrl: '../../lib/elk-worker.js'
+        workerUrl: '../../lib/elk-workerFOO.js'
     });
 
     const mode = [
