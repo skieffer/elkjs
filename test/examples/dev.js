@@ -9,11 +9,11 @@ const graph = {
     children: [
         { id: "A",
             children: [
-                { id: "x", width: 50, height: 80 },
+                { id: "x", width: 50, height: 90 },
                 { id: "B",
                     children: [
-                        { id: "y", width: 50, height: 80 },
-                        { id: "z", width: 50, height: 80 },
+                        { id: "y", width: 50, height: 90 },
+                        { id: "z", width: 50, height: 90 },
                     ],
                     edges: [
                         { id: "e1", sources: [ "y" ], targets: [ "z" ] },
