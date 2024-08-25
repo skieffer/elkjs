@@ -1,10 +1,19 @@
 // Assumes svg.js (https://www.npmjs.com/package/@svgdotjs/svg.js) is loaded under global `SVG` object.
 
+EdgeDrawingModes = {
+    CONTAINER: 'CONTAINER', PARENT: 'PARENT', ROOT: 'ROOT'
+};
+
+const TESTING_MODE = [
+    EdgeDrawingModes.CONTAINER, EdgeDrawingModes.PARENT, EdgeDrawingModes.ROOT
+][0];
+
 const graph = {
     id: "root",
     properties: {
         'algorithm': 'layered',
         'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+        'org.eclipse.elk.json.edgeCoords': TESTING_MODE,
     },
     children: [
         { id: "A",
@@ -23,11 +32,6 @@ const graph = {
             ],
         },
     ],
-};
-
-
-EdgeDrawingModes = {
-    CONTAINER: 'CONTAINER', PARENT: 'PARENT', ROOT: 'ROOT'
 };
 
 
@@ -155,11 +159,7 @@ function main() {
         workerUrl: '../../lib/elk-workerFOO.js'
     });
 
-    const mode = [
-        EdgeDrawingModes.CONTAINER, EdgeDrawingModes.PARENT, EdgeDrawingModes.ROOT
-    ][0];
-
-    const painter = new Painter({edgeDrawingMode: mode});
+    const painter = new Painter({edgeDrawingMode: TESTING_MODE});
 
     elk.layout(graph).then(function(g) {
         painter.draw(g);
