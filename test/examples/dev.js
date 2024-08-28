@@ -26,7 +26,11 @@ const graph = {
                     ],
                     edges: [
                         { id: "e1", sources: [ "y" ], targets: [ "z" ] },
-                        { id: "e2", sources: [ "x" ], targets: [ "z" ] },
+                        { id: "e2", sources: [ "x" ], targets: [ "z" ],
+                          labels: [
+                              { text: "Foo", width: 30, height: 12 }
+                          ]
+                        },
                     ],
                 },
             ],
@@ -46,6 +50,7 @@ class Painter {
         this.svg = null;
         this.globalCoords = {};
         this.currentPath = [];
+        this.currentEdge = null;
         this.currentEdgeContainer = null;
         this.x0 = 0;
         this.y0 = 0;
@@ -84,13 +89,23 @@ class Painter {
                 this.drawRecursive(obj);
             }
         } else if (typeof(g) === 'object') {
+            let enteredNode = false;
+            let enteredEdge = false;
+
             if (g.hasOwnProperty('container')) {
+                this.currentEdge = g;
+                enteredEdge = true;
                 this.currentEdgeContainer = g.container;
             }
 
             if (g.hasOwnProperty('width')) {
-                this.drawElkRect(g);
-                this.enterNode(g);
+                if (g.hasOwnProperty('text')) {
+                    this.drawElkLabel(g);
+                } else {
+                    this.drawElkRect(g);
+                    this.enterNode(g);
+                    enteredNode = true;
+                }
             }
 
             if (g.hasOwnProperty('startPoint')) {
@@ -101,10 +116,20 @@ class Painter {
                 this.drawRecursive(value);
             }
 
-            if (g.hasOwnProperty('width')) {
+            if (enteredNode) {
                 this.exitNode();
             }
+
+            if (enteredEdge) {
+                this.currentEdge = null;
+            }
         }
+    }
+
+    drawElkLabel(label) {
+        const text = this.svg.text(label.text)
+        const [x0, y0] = this.currentEdge ? this.getCurrentEdgeShift() : [this.x0, this.y0];
+        text.move(x0 + label.x, y0 + label.y)
     }
 
     drawElkRect(r) {
@@ -112,7 +137,7 @@ class Painter {
         rect.move(this.x0 + r.x, this.y0 + r.y);
     }
 
-    drawElkEdgeSection(section) {
+    getCurrentEdgeShift() {
         let p;
         switch (this.edgeDrawingMode) {
             case EdgeDrawingModes.CONTAINER:
@@ -128,7 +153,11 @@ class Painter {
             default:
                 throw 'Unknown edge drawing mode!';
         }
-        const [x0, y0] = p;
+        return p;
+    }
+
+    drawElkEdgeSection(section) {
+        const [x0, y0] = this.getCurrentEdgeShift();
 
         const points = [];
 
