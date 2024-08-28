@@ -1,5 +1,10 @@
-const shapeCoordMode = ShapeCoordModes.PARENT;
-const edgeCoordMode = EdgeCoordModes.CONTAINER;
+const shapeCoordMode = [
+    ShapeCoordModes.PARENT, ShapeCoordModes.ROOT
+][0];
+
+const edgeCoordMode = [
+    EdgeCoordModes.CONTAINER, EdgeCoordModes.PARENT, EdgeCoordModes.ROOT
+][0];
 
 const graph = {
     id: "root",
@@ -10,20 +15,49 @@ const graph = {
     },
     children: [
         { id: "A",
+            labels: [
+                { text: "A", width: 10, height: 12 }
+            ],
             children: [
-                { id: "x", width: 50, height: 90 },
+                { id: "x", width: 50, height: 90,
+                    labels: [
+                        { text: "x", width: 10, height: 12 }
+                    ]
+                },
                 { id: "B",
+                    labels: [
+                        { text: "B", width: 10, height: 12 }
+                    ],
+                    ports: [
+                        { id: "p", width: 10, height: 10,
+                            labels: [{ text: "p", width: 10, height: 12 }]
+                        }
+                    ],
                     children: [
-                        { id: "y", width: 50, height: 90 },
-                        { id: "z", width: 50, height: 90 },
+                        { id: "y", width: 50, height: 90,
+                            labels: [
+                                { text: "y", width: 10, height: 12 }
+                            ]
+                        },
+                        { id: "z", width: 50, height: 90,
+                            labels: [
+                                { text: "z", width: 10, height: 12 }
+                            ]
+                        },
                     ],
                     edges: [
-                        { id: "e1", sources: [ "y" ], targets: [ "z" ] },
+                        { id: "e1", sources: [ "y" ], targets: [ "z" ],
+                            labels: [
+                                { text: "e1", width: 20, height: 12 }
+                            ]
+                        },
                         { id: "e2", sources: [ "x" ], targets: [ "z" ],
                           labels: [
-                              { text: "Foo", width: 30, height: 12 }
+                              { text: "e2", width: 20, height: 12 }
                           ]
                         },
+                        { id: "e3", sources: ["x"], targets: ["p"] },
+                        { id: "e4", sources: ["p"], targets: ["y"] }
                     ],
                 },
             ],
