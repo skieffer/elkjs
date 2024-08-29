@@ -1,4 +1,4 @@
-const graph = {
+const graph1 = {
     id: "root",
     properties: {
         'algorithm': 'layered',
@@ -56,7 +56,42 @@ const graph = {
     ],
 };
 
-async function run(shapeCoordMode, edgeCoordMode, {dump = true}) {
+const graph2 = {
+    "id": "root",
+    "properties": {
+        "algorithm": "layered",
+        "org.eclipse.elk.hierarchyHandling": "INCLUDE_CHILDREN"
+    },
+    "children": [
+        { "id": "A",
+            "children": [
+                { "id": "x", "width": 50, "height": 90 },
+                { "id": "B",
+                    "labels": [ { "text": "B", "width": 10, "height": 12 } ],
+                    "ports": [
+                        { "id": "p", "width": 10, "height": 10,
+                            "labels": [ { "text": "p", "width": 10, "height": 12 } ]
+                        }
+                    ],
+                    "children": [
+                        { "id": "y", "width": 50, "height": 90 },
+                        { "id": "z", "width": 50, "height": 90 }
+                    ],
+                    "edges": [
+                        { "id": "e1", "sources": [ "y" ], "targets": [ "z" ] },
+                        { "id": "e2", "sources": [ "x" ], "targets": [ "z" ],
+                            "labels": [ { "text": "e2", "width": 20, "height": 12 } ]
+                        },
+                        { "id": "e3", "sources": [ "x" ], "targets": [ "p" ] },
+                        { "id": "e4", "sources": [ "p" ], "targets": [ "y" ] }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+async function run(shapeCoordMode, edgeCoordMode, graph, {dump = true}) {
     graph.properties['org.eclipse.elk.json.shapeCoords'] = shapeCoordMode
     graph.properties['org.eclipse.elk.json.edgeCoords'] = edgeCoordMode
 
@@ -95,7 +130,8 @@ async function main() {
             const h = document.createElement('h2');
             h.innerText = `Shape Coord Mode: ${scm}, Edge Coord Mode: ${ecm}`;
             document.body.appendChild(h);
-            await run(scm, ecm, {dump: false});
+            const options = {dump: false};
+            await run(scm, ecm, graph2, options);
             document.body.appendChild(document.createElement('hr'));
         }
     }
