@@ -12,6 +12,7 @@ const graph = {
         'algorithm': 'layered',
         'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN',
         'org.eclipse.elk.json.edgeCoords': edgeCoordMode,
+        'org.eclipse.elk.json.shapeCoords': shapeCoordMode,
     },
     children: [
         { id: "A",
