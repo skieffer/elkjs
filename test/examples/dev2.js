@@ -91,6 +91,21 @@ const graph2 = {
     ]
 }
 
+
+function noDollarH(g) {
+    if (Array.isArray(g)) {
+        for (const obj of g) {
+            noDollarH(obj);
+        }
+    } else if (typeof(g) === 'object') {
+        delete g["$H"];
+        for (const v of Object.values(g)) {
+            noDollarH(v);
+        }
+    }
+}
+
+
 async function run(shapeCoordMode, edgeCoordMode, graph, {dump = true}) {
     graph.properties['org.eclipse.elk.json.shapeCoords'] = shapeCoordMode
     graph.properties['org.eclipse.elk.json.edgeCoords'] = edgeCoordMode
@@ -106,6 +121,7 @@ async function run(shapeCoordMode, edgeCoordMode, graph, {dump = true}) {
     });
 
     const g = await elk.layout(graph);
+    noDollarH(g);
 
     painter.draw(g);
 
@@ -130,7 +146,7 @@ async function main() {
             const h = document.createElement('h2');
             h.innerText = `Shape Coord Mode: ${scm}, Edge Coord Mode: ${ecm}`;
             document.body.appendChild(h);
-            const options = {dump: false};
+            const options = {dump: true};
             await run(scm, ecm, graph2, options);
             document.body.appendChild(document.createElement('hr'));
         }
