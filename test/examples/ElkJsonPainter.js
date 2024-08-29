@@ -43,7 +43,7 @@ class ElkJsonPainter {
 
         this.currentEdge = null;
 
-        // Coordinates of the node we are currently inside of:
+        // The global coordinates of the node we are currently inside of:
         this.x0 = 0;
         this.y0 = 0;
     }
@@ -96,8 +96,13 @@ class ElkJsonPainter {
 
     enterRectangle(r) {
         this.currentPath.push(r.id);
-        this.x0 += r.x;
-        this.y0 += r.y;
+        if (this.shapeCoordMode === ShapeCoordModes.PARENT) {
+            this.x0 += r.x;
+            this.y0 += r.y;
+        } else {
+            this.x0 = r.x;
+            this.y0 = r.y;
+        }
         this.globalCoords.set(r.id, [this.x0, this.y0]);
     }
 
