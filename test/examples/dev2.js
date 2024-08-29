@@ -1,18 +1,8 @@
-const shapeCoordMode = [
-    ShapeCoordModes.PARENT, ShapeCoordModes.ROOT
-][0];
-
-const edgeCoordMode = [
-    EdgeCoordModes.CONTAINER, EdgeCoordModes.PARENT, EdgeCoordModes.ROOT
-][0];
-
 const graph = {
     id: "root",
     properties: {
         'algorithm': 'layered',
-        'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN',
-        'org.eclipse.elk.json.edgeCoords': edgeCoordMode,
-        'org.eclipse.elk.json.shapeCoords': shapeCoordMode,
+        'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN'
     },
     children: [
         { id: "A",
@@ -66,7 +56,10 @@ const graph = {
     ],
 };
 
-function main() {
+async function run(shapeCoordMode, edgeCoordMode, {dump = true}) {
+    graph.properties['org.eclipse.elk.json.shapeCoords'] = shapeCoordMode
+    graph.properties['org.eclipse.elk.json.edgeCoords'] = edgeCoordMode
+
     const elk = new ELK({
         workerUrl: '../../lib/elk-workerFOO.js'
     });
@@ -77,13 +70,35 @@ function main() {
         edgeCoordMode: edgeCoordMode
     });
 
-    elk.layout(graph).then(function(g) {
-        painter.draw(g);
+    const g = await elk.layout(graph);
 
+    painter.draw(g);
+
+    if (dump) {
         const rawOutput = document.createElement('div');
         rawOutput.innerHTML = "<pre>" + JSON.stringify(g, null, " ") + "</pre>";
         document.body.appendChild(rawOutput);
-    });
+    }
+}
+
+async function main() {
+    const shapeCoordModes = [
+        ShapeCoordModes.PARENT, ShapeCoordModes.ROOT
+    ];
+
+    const edgeCoordModes = [
+        EdgeCoordModes.CONTAINER, EdgeCoordModes.PARENT, EdgeCoordModes.ROOT
+    ];
+
+    for (const scm of shapeCoordModes) {
+        for (const ecm of edgeCoordModes) {
+            const h = document.createElement('h2');
+            h.innerText = `Shape Coord Mode: ${scm}, Edge Coord Mode: ${ecm}`;
+            document.body.appendChild(h);
+            await run(scm, ecm, {dump: false});
+            document.body.appendChild(document.createElement('hr'));
+        }
+    }
 }
 
 main();
