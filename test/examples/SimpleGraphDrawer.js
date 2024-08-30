@@ -25,7 +25,11 @@ class SimpleGraphDrawer {
         *  and width 10n + 2, where the text is n letters long. */
         labelStyle = {"font-family": "monospace", "font-size": 16},
         shapeCoordMode = ShapeCoordModes.PARENT,
-        edgeCoordMode = EdgeCoordModes.CONTAINER
+        edgeCoordMode = EdgeCoordModes.CONTAINER,
+        arrowHeadLength = 8,
+        // arrowHeadFill will default to equal edgeStyle.stroke, giving "solid" arrowheads.
+        // If you want "open" arrowheads, then set this to 'none'.
+        arrowHeadFill = null,
     }) {
         this.nodeStyle = nodeStyle;
         this.edgeStyle = Object.assign(edgeStyle, {fill: 'none'});
@@ -33,6 +37,13 @@ class SimpleGraphDrawer {
         this.labelStyle = labelStyle;
         this.shapeCoordMode = shapeCoordMode;
         this.edgeCoordMode = edgeCoordMode;
+        this.arrowHeadLength = arrowHeadLength;
+
+        if (arrowHeadFill === null) {
+            arrowHeadFill = edgeStyle.stroke;
+        }
+        this.arrowHeadStyle = Object.assign(Object.assign({}, this.edgeStyle), {fill: arrowHeadFill});
+
         this.reset()
     }
 
@@ -170,8 +181,11 @@ class SimpleGraphDrawer {
     drawEdge(edge) {
         this.currentEdge = edge;
 
-        for (const section of (edge.sections || [])) {
-            this.drawEdgeSection(section);
+        const sections = edge.sections || [];
+        const n = sections.length;
+        for (let i = 0; i < n; i++) {
+            const section = sections[i];
+            this.drawEdgeSection(section, i === n - 1);
         }
 
         for (const label of (edge.labels || [])) {
@@ -181,7 +195,7 @@ class SimpleGraphDrawer {
         this.currentEdge = null;
     }
 
-    drawEdgeSection(section) {
+    drawEdgeSection(section, drawArrowHead) {
         const [dx, dy] = this.getEdgeShift();
 
         const points = [];
@@ -199,6 +213,13 @@ class SimpleGraphDrawer {
         addPoint(section.endPoint);
 
         this.svg.polyline(points, this.edgeStyle);
+
+        if (drawArrowHead) {
+            const n = points.length;
+            const p = points[n-2];
+            const q = points[n-1];
+            this.svg.arrowHead(p, q, this.arrowHeadLength, this.arrowHeadStyle);
+        }
     }
 
 }
@@ -251,6 +272,32 @@ class SvgDrawing {
         const points = pointsArray.map(q => q.join(',')).join(' ');
         const attrs = Object.assign(style, {points});
         this.addElement(tag, attrs);
+    }
+
+    /* p and q are two points (length-2 arrays of numbers)
+     * We draw an arrowhead at q, for a line from p to q.
+     * The sides of the arrowhead will have length L.
+     */
+    arrowHead(p, q, L, style) {
+        const v0x = p[0] - q[0];
+        const v0y = p[1] - q[1];
+        const M = Math.sqrt(v0x*v0x + v0y*v0y);
+
+        const v1x = v0x * L/M;
+        const v1y = v0y * L/M;
+
+        const sr3 = Math.sqrt(3);
+
+        const v2x = (v1x*sr3 - v1y)/2;
+        const v2y = (v1x + v1y*sr3)/2;
+
+        const v3x = (v1x*sr3 + v1y)/2;
+        const v3y = (-v1x + v1y*sr3)/2;
+
+        const s = [q[0] + v2x, q[1] + v2y];
+        const t = [q[0] + v3x, q[1] + v3y];
+
+        this.polyline([s, q, t], style);
     }
 
     text(x0, y0, width, height, text, style) {
