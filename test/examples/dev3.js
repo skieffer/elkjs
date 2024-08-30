@@ -67,10 +67,10 @@ const graph2 = {
             "children": [
                 { "id": "x", "width": 50, "height": 90 },
                 { "id": "B",
-                    "labels": [ { "text": "B", "width": 10, "height": 12 } ],
+                    "labels": [ { "text": "B", "width": 12, "height": 20 } ],
                     "ports": [
                         { "id": "p", "width": 10, "height": 10,
-                            "labels": [ { "text": "p", "width": 10, "height": 12 } ]
+                            "labels": [ { "text": "p", "width": 12, "height": 20 } ]
                         }
                     ],
                     "children": [
@@ -80,7 +80,7 @@ const graph2 = {
                     "edges": [
                         { "id": "e1", "sources": [ "y" ], "targets": [ "z" ] },
                         { "id": "e2", "sources": [ "x" ], "targets": [ "z" ],
-                            "labels": [ { "text": "e2", "width": 20, "height": 12 } ]
+                            "labels": [ { "text": "e2", "width": 22, "height": 20 } ]
                         },
                         { "id": "e3", "sources": [ "x" ], "targets": [ "p" ] },
                         { "id": "e4", "sources": [ "p" ], "targets": [ "y" ] }
@@ -147,7 +147,7 @@ async function main() {
             const h = document.createElement('h2');
             h.innerText = `Shape Coord Mode: ${scm}, Edge Coord Mode: ${ecm}`;
             document.body.appendChild(h);
-            const options = {dump: true};
+            const options = {dump: false};
             await run(scm, ecm, graph2, options);
             document.body.appendChild(document.createElement('hr'));
         }

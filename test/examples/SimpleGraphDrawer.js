@@ -21,7 +21,9 @@ class SimpleGraphDrawer {
         nodeStyle = {stroke: "black", fill: "none"},
         edgeStyle = {stroke: "black", "stroke-width": 1},
         portStyle = {stroke: "black", fill: "black"},
-        labelStyle = {"font-size": 16},
+        /* When using monospace 16, a good rule for labels is to use height 20,
+        *  and width 10n + 2, where the text is n letters long. */
+        labelStyle = {"font-family": "monospace", "font-size": 16},
         shapeCoordMode = ShapeCoordModes.PARENT,
         edgeCoordMode = EdgeCoordModes.CONTAINER
     }) {
@@ -158,7 +160,11 @@ class SimpleGraphDrawer {
 
     drawLabel(label) {
         const [dx, dy] = this.currentEdge ? this.getEdgeShift() : this.getShapeShift();
-        this.svg.text(label.x + dx, label.y + dy, label.text, this.labelStyle);
+        this.svg.text(
+            label.x + dx, label.y + dy,
+            label.width, label.height,
+            label.text, this.labelStyle
+        );
     }
 
     drawEdge(edge) {
@@ -247,11 +253,14 @@ class SvgDrawing {
         this.addElement(tag, attrs);
     }
 
-    text(x, y, text, style) {
+    text(x0, y0, width, height, text, style) {
         const tag = 'text';
+        const x1 = x0 + width/2;
+        const y1 = y0 + height/2;
         const attrs = Object.assign(style, {
-            x, y,
-            'dominant-baseline': "hanging"
+            x: x1, y: y1,
+            'text-anchor': 'middle',
+            'dominant-baseline': 'middle'
         });
         const elt = this.addElement(tag, attrs);
         elt.appendChild(document.createTextNode(text));
