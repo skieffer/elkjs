@@ -12,8 +12,27 @@ const EdgeCoordModes = {
 
 /* Draws ELK graphs given in JSON format as SVG.
  *
- * Supports each of ELK's shape and edge coordinate modes, but only as a single,
- * global setting for the whole graph.
+ * Constructing
+ * ------------
+ *
+ * When constructing, you can set graphical styles for nodes, edges, etc.
+ * See `constructor()` method.
+ *
+ * You should also say which of ELK's shape and edge coordinate modes
+ * to use (i.e. you must make sure this matches the JSON graphs you're going to ask it to
+ * draw). Only a single, global coordinate setting for the whole graph is supported, so
+ * if your graph uses different coordinate systems at different points, you can't use this
+ * class to draw it.
+ *
+ * Drawing
+ * -------
+ *
+ * To draw a graph `g` (in ELK JSON format), pass `g` to your instance's `draw()` method.
+ * The return value is an instance `s` of the `SvgDrawing` class.
+ *
+ * You can use the returned `SvgDrawing` instance `s` to do further drawing manually if you want.
+ * For that you can use its methods, or access its svg element `s.svg` directly.
+ * You can use `s.addTo()` to add the svg element to a web page.
  */
 class SimpleGraphDrawer {
 
@@ -225,6 +244,8 @@ class SimpleGraphDrawer {
 }
 
 
+/* A simple SVG drawer class.
+ */
 class SvgDrawing {
 
     constructor(W, H) {
@@ -300,6 +321,10 @@ class SvgDrawing {
         this.polyline([s, q, t], style);
     }
 
+    /* Pass the upper-left corner and dimensions of the box you
+     * want the text to fit into. The text will be centered in this
+     * box, in both dimensions.
+     */
     text(x0, y0, width, height, text, style) {
         const tag = 'text';
         const x1 = x0 + width/2;
